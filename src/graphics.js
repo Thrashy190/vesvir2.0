@@ -103,7 +103,7 @@ export default class GraphicsEngine {
     );
     BABYLON.SceneLoader.ImportMesh(
       '',
-      '../models/',
+      './assets/',
       'camisaG.glb',
       this.scene,
       (newMeshes, particleSystems, skeletons) => {
