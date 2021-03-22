@@ -6,6 +6,8 @@ import Webcam from 'react-webcam';
 import Joints from './joints';
 import GraphicsEngine from './graphics';
 import PoseNet from './posenet';
+import { initializers } from '@tensorflow/tfjs';
+import { waitFor } from '@testing-library/dom';
 
 function App() {
   const webcamRef = useRef(null);
@@ -16,7 +18,33 @@ function App() {
   const graphicsEngine = useRef(null);
   const posenet = useRef(null);
 
-  useEffect(async () => {
+  const init = async () => {
+    if (
+      typeof webcamRef.current !== 'undefined' &&
+      webcamRef.current !== null &&
+      webcamRef.current.video.readyState === 4
+    ) {
+      const net = await posenet.current.loadNetwork();
+      // Get video properties
+      const video = webcamRef.current.video;
+      const videoWidth = webcamRef.current.video.videoWidth;
+      const videoHeight = webcamRef.current.video.videoHeight;
+
+      // Set video width
+      webcamRef.current.video.width = videoWidth;
+      webcamRef.current.video.height = videoHeight;
+
+      canvasRef.current.width = videoWidth;
+      canvasRef.current.height = videoHeight;
+
+      // Make detections
+      posenet.current.detectPoseInRealTime(video, net);
+    } else {
+      setTimeout(init, 100);
+    }
+  };
+
+  useEffect(() => {
     joints.current = new Joints();
     graphicsEngine.current = new GraphicsEngine(
       renderCanvasRef.current,
@@ -27,32 +55,23 @@ function App() {
       output: canvasRef.current,
     });
 
-    const net = await posenet.current.loadNetwork();
-
-    if (
-      typeof webcamRef.current !== 'undefined' &&
-      webcamRef.current !== null &&
-      webcamRef.current.video.readyState === 4
-    ) {
-      // Get video properties
-      const video = webcamRef.current.video;
-      const videoWidth = webcamRef.current.video.videoWidth;
-      const videoHeight = webcamRef.current.video.videoHeight;
-
-      // Set video width
-      webcamRef.current.video.width = videoWidth;
-      webcamRef.current.video.height = videoHeight;
-
-      // Make detections
-      posenet.current.detectPoseInRealTime(video, net);
-    }
+    init();
   }, []);
 
   return (
     <div className="App">
       <header className="App-header">
-        <Webcam ref={webcamRef} className="Webcam" />
-        <canvas ref={canvasRef} className="Canvas" />
+        <Webcam
+          ref={webcamRef}
+          className="Webcam"
+          style={{ width: 640, height: 480 }}
+        />
+        <canvas
+          ref={canvasRef}
+          className="Canvas"
+          style={{ width: 640, height: 480 }}
+        />
+
         <canvas ref={renderCanvasRef} className="RenderCanvas" />
       </header>
     </div>

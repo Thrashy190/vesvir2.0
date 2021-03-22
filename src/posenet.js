@@ -3,8 +3,8 @@ import { drawKeypoints, drawSkeleton } from './utilities';
 
 import Transform from './tranform';
 
-const videoWidth = 500;
-const videoHeight = 500;
+const videoWidth = 640;
+const videoHeight = 480;
 
 navigator.getUserMedia =
   navigator.getUserMedia ||
@@ -66,7 +66,6 @@ export default class PoseNet {
         'Browser API navigator.mediaDevices.getUserMedia not available'
       );
     }
-
     const video = this.htmlElements.video;
     video.width = videoWidth;
     video.height = videoHeight;
@@ -75,7 +74,7 @@ export default class PoseNet {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
-        facingMode: 'user',
+        facingMode: '',
         width: mobile ? undefined : videoWidth,
         height: mobile ? undefined : videoHeight,
       },
@@ -130,7 +129,7 @@ export default class PoseNet {
       ctx.clearRect(0, 0, videoWidth, videoHeight);
 
       ctx.save();
-      ctx.scale(-1, 1);
+      ctx.scale(1, 1);
       ctx.translate(-videoWidth, 0);
       ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
       ctx.restore();
