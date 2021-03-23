@@ -89,16 +89,16 @@ export default class Transform {
       this.keypoints['rightHip'] &&
       this.keypoints['nose']
     ) {
-      console.log('inside torso()');
+      //  console.log('inside torso()');
       const leftShoulder = this.keypoints['leftShoulder'];
       const rightShoulder = this.keypoints['rightShoulder'];
       const rightHip = this.keypoints['rightHip'];
 
       let x = (leftShoulder.x + rightShoulder.x) / 2;
-      console.log('x', x);
+      // console.log('x', x);
       let y = (rightShoulder.y + rightHip.y) / 2;
-      console.log('y', y);
-      console.log('nose', this.keypoints['nose']);
+      // console.log('y', y);
+      // console.log('nose', this.keypoints['nose']);
 
       // get center relative points from origin
       x = (this.keypoints['nose'].x - x) / (this.shoulderDistance / 15);

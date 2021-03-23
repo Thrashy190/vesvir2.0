@@ -72,7 +72,11 @@ function App() {
           style={{ width: 640, height: 480 }}
         />
 
-        <canvas ref={renderCanvasRef} className="RenderCanvas" />
+        <canvas
+          ref={renderCanvasRef}
+          className="RenderCanvas"
+          style={{ width: 640, height: 480 }}
+        />
       </header>
     </div>
   );

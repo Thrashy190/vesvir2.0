@@ -83,13 +83,13 @@ export default class GraphicsEngine {
   }
 
   /**
-   * Initialez the scene, creates the character
+   * Initialize the scene, creates the character
    * and defines how should joints of the character be updated
    */
   initScene() {
     BABYLON.Animation.AllowMatricesInterpolation = true;
     this.scene = new BABYLON.Scene(this.engine);
-    this.scene.clearColor = new BABYLON.Color3(0.5, 0.8, 0.5);
+    this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0.0000001);
     const camera = this.setCamera();
     const sphere = BABYLON.MeshBuilder.CreateSphere(
       'headSphere',
@@ -98,7 +98,7 @@ export default class GraphicsEngine {
     );
     const torsoSphere = BABYLON.MeshBuilder.CreateSphere(
       'torsoSphere',
-      { diameter: 1 },
+      { diameter: 0.5 },
       this.scene
     );
     BABYLON.SceneLoader.ImportMesh(
@@ -109,23 +109,20 @@ export default class GraphicsEngine {
       (newMeshes, particleSystems, skeletons) => {
         const mesh = newMeshes[0];
         const skeleton = skeletons[0];
-        mesh.scaling = new BABYLON.Vector3(3, 3, 3);
+        mesh.scaling = new BABYLON.Vector3(5, 5, 5);
         mesh.position = new BABYLON.Vector3(0, 0, 0);
-        mesh.rotation.y = 90;
+        mesh.rotation.y = 0;
+
+        let t = 0;
 
         /** Head movement tracking */
         // const head_bone = skeleton.bones[7];
 
-        const right_shoulder_bone = skeleton.bones[10];
-        console.log('right_shoulder_bone', right_shoulder_bone);
-        const right_arm_bone = skeleton.bones[12];
-        console.log('right_arm_bone', right_arm_bone);
-        const left_shoulder_bone = skeleton.bones[5];
-        console.log('left_shoulder_bone', left_shoulder_bone);
-        const left_arm_bone = skeleton.bones[7];
-        console.log('left_arm_bone', left_arm_bone);
+        const right_shoulder_bone = skeleton.bones[7];
+        const right_arm_bone = skeleton.bones[8];
+        const left_shoulder_bone = skeleton.bones[11];
+        const left_arm_bone = skeleton.bones[12];
         const torso_bone = skeleton.bones[3];
-        console.log('torso_bone', torso_bone);
 
         /** Head movement tracking */
 
@@ -139,40 +136,52 @@ export default class GraphicsEngine {
         const torsoLookAtCtl = new BABYLON.BoneLookController(
           mesh,
           torso_bone,
-          torsoSphere.position,
-          { adjustYaw: Math.PI * 0.5, adjustRoll: Math.PI * 0.5 }
+          torsoSphere.position
+          //{ adjustYaw: Math.PI * 0.5, adjustRoll: Math.PI * 0.5 }
         );
 
         this.scene.registerBeforeRender(() => {
           const { data } = this.joints;
 
-          //console.log('head coords', data.head);
           sphere.position.x = 0 + data.head.x;
           sphere.position.y = 6 + data.head.y;
           sphere.position.z = 5;
 
+          /** Code to move back and forth torsoSphere */
           //console.log('torso coords', data.torso);
-          // t += 0.02;
-          // torsoSphere.position.x = 2 * Math.sin(t);
-          torsoSphere.position.x = 0 - data.torso.x;
+          console.log('torso bone rotation', torso_bone.rotation);
+          t += 0.02;
+          torsoSphere.position.x = 2 * Math.sin(t);
+
+          /** torsoSphere controls where the torso bone looks at */
+          //torsoSphere.position.x = 0 + data.torso.x;
           torsoSphere.position.y = 5;
-          torsoSphere.position.z = 5;
+          torsoSphere.position.z = -5;
 
           // headLookAtCtl.update();
           torsoLookAtCtl.update();
 
+          /** All the movement and rotation for the arms */
           right_shoulder_bone.rotation = new BABYLON.Vector3(
+            1.98 * data.rightShoulder - 0.2,
             0,
-            1.5 * data.rightShoulder,
             0
           );
-          right_arm_bone.rotation = new BABYLON.Vector3(0, data.rightElbow, 0);
+          right_arm_bone.rotation = new BABYLON.Vector3(
+            data.rightElbow * 0.7,
+            0,
+            0
+          );
           left_shoulder_bone.rotation = new BABYLON.Vector3(
+            2.3 * data.leftShoulder - 0.2,
             0,
-            -1.5 * data.leftShoulder,
             0
           );
-          left_arm_bone.rotation = new BABYLON.Vector3(0, -data.leftElbow, 0);
+          left_arm_bone.rotation = new BABYLON.Vector3(
+            data.leftElbow * 0.7,
+            0,
+            0
+          );
         });
       }
     );
@@ -197,8 +206,8 @@ export default class GraphicsEngine {
       BABYLON.Vector3.Zero(),
       this.scene
     );
-    camera.setTarget(new BABYLON.Vector3(0, 4, 0));
-    camera.setPosition(new BABYLON.Vector3(0, 6, 12));
+    camera.setTarget(new BABYLON.Vector3(0, 6.5, 0));
+    camera.setPosition(new BABYLON.Vector3(0, 6.5, -5));
     camera.attachControl(this.canvas, true);
     const light = new BABYLON.HemisphericLight(
       'light1',
