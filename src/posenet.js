@@ -1,7 +1,8 @@
-import * as posenet from '@tensorflow-models/posenet';
-import { drawKeypoints, drawSkeleton } from './utilities';
+import * as posenet from "@tensorflow-models/posenet";
+import { drawKeypoints, drawSkeleton } from "./utilities";
+import { distancePointsChest } from "./distance";
 
-import Transform from './tranform';
+import Transform from "./tranform";
 
 const videoWidth = 640;
 const videoHeight = 480;
@@ -24,7 +25,7 @@ export default class PoseNet {
    */
   constructor(joints, graphicsEngine, _htmlelems) {
     this.state = {
-      algorithm: 'single-pose',
+      algorithm: "single-pose",
       input: {
         outputStride: 16,
         imageScaleFactor: 0.5,
@@ -40,6 +41,7 @@ export default class PoseNet {
     this.transform = new Transform(this.joints);
     this.graphics_engine = graphicsEngine;
     this.graphics_engine.render();
+    this.distance = 0;
   }
 
   /** Checks whether the device is mobile or not */
@@ -63,7 +65,7 @@ export default class PoseNet {
   async setupCamera() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       throw new Error(
-        'Browser API navigator.mediaDevices.getUserMedia not available'
+        "Browser API navigator.mediaDevices.getUserMedia not available"
       );
     }
     const video = this.htmlElements.video;
@@ -74,7 +76,7 @@ export default class PoseNet {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
-        facingMode: '',
+        facingMode: "",
         width: mobile ? undefined : videoWidth,
         height: mobile ? undefined : videoHeight,
       },
@@ -95,7 +97,7 @@ export default class PoseNet {
    */
   detectPoseInRealTime(video, net) {
     const canvas = this.htmlElements.output;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     // since images are being fed from a webcam
     const flipHorizontal = true;
 
@@ -143,25 +145,31 @@ export default class PoseNet {
           // const head = self.transform.head();
           const torso = self.transform.torso();
           const rightShoulderAngle = self.transform.rotateJoint(
-            'leftShoulder',
-            'rightShoulder',
-            'rightElbow'
+            "leftShoulder",
+            "rightShoulder",
+            "rightElbow"
           );
           const rightArmAngle = self.transform.rotateJoint(
-            'rightShoulder',
-            'rightElbow',
-            'rightWrist'
+            "rightShoulder",
+            "rightElbow",
+            "rightWrist"
           );
           const leftShoulderAngle = self.transform.rotateJoint(
-            'rightShoulder',
-            'leftShoulder',
-            'leftElbow'
+            "rightShoulder",
+            "leftShoulder",
+            "leftElbow"
           );
           const lefArmAngle = self.transform.rotateJoint(
-            'leftShoulder',
-            'leftElbow',
-            'leftWrist'
+            "leftShoulder",
+            "leftElbow",
+            "leftWrist"
           );
+
+          // if (num == 1) {
+          //   return pose;
+          // }
+
+          self.graphics_engine.distance = distancePointsChest(pose);
 
           // keypoints from 0 to 12 are from head to waist
           drawKeypoints(keypoints.slice(0, 13), minPartConfidence, ctx);
@@ -171,8 +179,8 @@ export default class PoseNet {
 
       requestAnimationFrame(poseDetectionFrame);
     }
-
     poseDetectionFrame();
+    // this.distance = distancePointsChest(varPoses);
   }
 
   /** Loads the PoseNet model weights with architecture 0.75 */

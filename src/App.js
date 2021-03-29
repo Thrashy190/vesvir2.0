@@ -1,13 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import './App.css';
-import * as tf from '@tensorflow/tfjs';
-import Webcam from 'react-webcam';
+import React, { useEffect, useRef } from "react";
+import "./App.css";
+import * as tf from "@tensorflow/tfjs";
+import Webcam from "react-webcam";
 
-import Joints from './joints';
-import GraphicsEngine from './graphics';
-import PoseNet from './posenet';
-import { initializers } from '@tensorflow/tfjs';
-import { waitFor } from '@testing-library/dom';
+import Joints from "./joints";
+import GraphicsEngine from "./graphics";
+import PoseNet from "./posenet";
+import { initializers } from "@tensorflow/tfjs";
+import { waitFor } from "@testing-library/dom";
 
 function App() {
   const webcamRef = useRef(null);
@@ -20,7 +20,7 @@ function App() {
 
   const init = async () => {
     if (
-      typeof webcamRef.current !== 'undefined' &&
+      typeof webcamRef.current !== "undefined" &&
       webcamRef.current !== null &&
       webcamRef.current.video.readyState === 4
     ) {
@@ -54,7 +54,6 @@ function App() {
       video: webcamRef.current.video,
       output: canvasRef.current,
     });
-
     init();
   }, []);
 
