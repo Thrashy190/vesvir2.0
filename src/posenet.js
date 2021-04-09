@@ -1,6 +1,6 @@
 import * as posenet from "@tensorflow-models/posenet";
 import { drawKeypoints, drawSkeleton } from "./utilities";
-import { distancePointsChest } from "./distance";
+import { distancePointsChest } from "./movement";
 
 import Transform from "./tranform";
 
@@ -165,10 +165,7 @@ export default class PoseNet {
             "leftWrist"
           );
 
-          // if (num == 1) {
-          //   return pose;
-          // }
-
+          self.graphics_engine.posesData = pose;
           self.graphics_engine.distance = distancePointsChest(pose);
 
           // keypoints from 0 to 12 are from head to waist

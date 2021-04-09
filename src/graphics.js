@@ -1,5 +1,6 @@
 import * as BABYLON from "babylonjs";
 import "babylonjs-loaders";
+import { centerChestPoint } from "./movement";
 
 /**
  * GraphicsEngine class for running BabylonJS
@@ -81,21 +82,9 @@ export default class GraphicsEngine {
     this.camera = this.initScene();
     this.engine.hideLoadingUI();
     this.distance = 0;
-    this.escalas = [
-      [-3, 260],
-      [-4, 240],
-      [-5, 160],
-      [-6, 120],
-      [-7, 100],
-      [-8, 90],
-      [-9, 85],
-      [-10, 80],
-      [-11, 70],
-      [-12, 60],
-      [-13, 50],
-      [-14, 40],
-      [-15, 30],
-    ];
+    this.posesData = {};
+    this.center = {};
+    this.mesh = {};
   }
 
   /**
@@ -120,14 +109,14 @@ export default class GraphicsEngine {
     BABYLON.SceneLoader.ImportMesh(
       "",
       "./assets/",
-      "camisaSC.glb",
+      "camisaG.glb",
       this.scene,
       (newMeshes, particleSystems, skeletons) => {
-        const mesh = newMeshes[0];
+        this.mesh = newMeshes[0];
         const skeleton = skeletons[0];
-        mesh.scaling = new BABYLON.Vector3(5, 5, 5);
-        mesh.position = new BABYLON.Vector3(0, 0, 0);
-        mesh.rotation.y = 0;
+        this.mesh.scaling = new BABYLON.Vector3(5, 5, 5);
+        this.mesh.position = new BABYLON.Vector3(0, 0, 0);
+        this.mesh.rotation.y = 0;
 
         let t = 0;
 
@@ -150,7 +139,7 @@ export default class GraphicsEngine {
         // );
 
         const torsoLookAtCtl = new BABYLON.BoneLookController(
-          mesh,
+          this.mesh,
           torso_bone,
           torsoSphere.position
           //{ adjustYaw: Math.PI * 0.5, adjustRoll: Math.PI * 0.5 }
@@ -202,13 +191,36 @@ export default class GraphicsEngine {
     return camera;
   }
 
+  renderDistanceScale() {
+    const self = this;
+    if (this.distance.score > 0.7) {
+      console.log(this.distance.score);
+      this.mesh.position = new BABYLON.Vector3(
+        0,
+        0,
+        -6.035 * Math.log(this.distance.distance) + 30.722
+      );
+    } else {
+      console.log("fuera del cuadro");
+      this.mesh.position = new BABYLON.Vector3(0, 0, -30);
+    }
+  }
+
+  renderMovementScale() {
+    const self = this;
+    this.center = centerChestPoint(self.posesData);
+    this.mesh.position = new BABYLON.Vector3(0, 0, 0);
+    console.log(this.mesh.position);
+  }
+
   /** BabylonJS render function that is called every frame */
   render() {
     const self = this;
     this.engine.runRenderLoop(() => {
       const self = this;
-      self.camera.setPosition(new BABYLON.Vector3(0, 7.4, -1));
-      console.log(this.distance);
+      //this.renderMovementScale();
+      this.renderDistanceScale();
+      self.camera.setPosition(new BABYLON.Vector3(0, 6.5, -5));
       if (self.scene) self.scene.render();
     });
   }
@@ -223,7 +235,7 @@ export default class GraphicsEngine {
       BABYLON.Vector3.Zero(),
       this.scene
     );
-    camera.setTarget(new BABYLON.Vector3(0, 7, 0));
+    camera.setTarget(new BABYLON.Vector3(0, 6.5, 0));
     camera.attachControl(this.canvas, true);
     const light = new BABYLON.HemisphericLight(
       "light1",
