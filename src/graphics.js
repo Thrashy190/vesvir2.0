@@ -209,8 +209,28 @@ export default class GraphicsEngine {
   renderMovementScale() {
     const self = this;
     this.center = centerChestPoint(self.posesData);
-    this.mesh.position = new BABYLON.Vector3(0, 0, 0);
-    console.log(this.mesh.position);
+    this.mesh.position = new BABYLON.Vector3(
+      0.0125 * self.center.x - 4,
+      -0.0167 * self.center.y + 4,
+      0
+    );
+    console.log(self.center);
+  }
+
+  renderFullMovementScale() {
+    const self = this;
+    if (this.distance.score > 0.7) {
+      console.table(this.mesh.position);
+      this.center = centerChestPoint(self.posesData);
+      this.mesh.position = new BABYLON.Vector3(
+        0.0125 * self.center.x - 4,
+        -0.0167 * self.center.y + 4,
+        -6.035 * Math.log(this.distance.distance) + 30.722
+      );
+    } else {
+      console.log("fuera del cuadro");
+      this.mesh.position = new BABYLON.Vector3(0, 0, -30);
+    }
   }
 
   /** BabylonJS render function that is called every frame */
@@ -218,9 +238,9 @@ export default class GraphicsEngine {
     const self = this;
     this.engine.runRenderLoop(() => {
       const self = this;
+      self.renderFullMovementScale();
       //this.renderMovementScale();
-      this.renderDistanceScale();
-      self.camera.setPosition(new BABYLON.Vector3(0, 6.5, -5));
+      //this.renderDistanceScale();
       if (self.scene) self.scene.render();
     });
   }
@@ -237,6 +257,7 @@ export default class GraphicsEngine {
     );
     camera.setTarget(new BABYLON.Vector3(0, 6.5, 0));
     camera.attachControl(this.canvas, true);
+    camera.setPosition(new BABYLON.Vector3(0, 6.5, -5));
     const light = new BABYLON.HemisphericLight(
       "light1",
       new BABYLON.Vector3(0, 1, 0),
