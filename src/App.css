@@ -9,43 +9,45 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+}
+
+.Babylon-App {
+  width: 640;
+  height: 480;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
 .Webcam {
   position: absolute;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
+  margin: 0;
   text-align: center;
   z-index: 9;
-  width: 640;
-  height: 480;
 }
 
 .Canvas {
   position: absolute;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
+  margin: 0;
   text-align: center;
   z-index: 9;
-  width: 640;
-  height: 480;
 }
 
 .RenderCanvas {
   position: absolute;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
+  margin: 0;
   text-align: center;
   z-index: 9;
-  width: 640;
-  height: 480;
   background: transparent;
+}
+
+.UI-Buttons {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  height: 10%;
+  width: 100%;
+  bottom: 0;
+  z-index: 10;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import './App.css';
 import * as tf from '@tensorflow/tfjs';
 import Webcam from 'react-webcam';
@@ -6,13 +6,14 @@ import Webcam from 'react-webcam';
 import Joints from './joints';
 import GraphicsEngine from './graphics';
 import PoseNet from './posenet';
-import { initializers } from '@tensorflow/tfjs';
-import { waitFor } from '@testing-library/dom';
+
+import Babylon from './components/BabylonUI';
 
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const renderCanvasRef = useRef(null);
+  const modelRef = useRef(null);
 
   const joints = useRef(null);
   const graphicsEngine = useRef(null);
@@ -48,7 +49,8 @@ function App() {
     joints.current = new Joints();
     graphicsEngine.current = new GraphicsEngine(
       renderCanvasRef.current,
-      joints.current
+      joints.current,
+      modelRef.current
     );
     posenet.current = new PoseNet(joints.current, graphicsEngine.current, {
       video: webcamRef.current.video,
@@ -60,24 +62,17 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <Webcam
-          ref={webcamRef}
-          className="Webcam"
-          style={{ width: 640, height: 480 }}
-        />
-        <canvas
-          ref={canvasRef}
-          className="Canvas"
-          style={{ width: 640, height: 480 }}
-        />
-
-        <canvas
-          ref={renderCanvasRef}
-          className="RenderCanvas"
-          style={{ width: 640, height: 480 }}
-        />
-      </header>
+      <div className="App-header">
+        <div className="Babylon-App" style={{ width: 640, height: 480 }}>
+          <Webcam ref={webcamRef} className="Webcam" />
+          <canvas ref={canvasRef} className="Canvas" />
+          <Babylon
+            graphicsEngine={graphicsEngine}
+            renderCanvasRef={renderCanvasRef}
+            className="RenderCanvas"
+          />
+        </div>
+      </div>
     </div>
   );
 }
