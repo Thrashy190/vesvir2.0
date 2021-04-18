@@ -13,7 +13,7 @@ function Babylon({ graphicsEngine, renderCanvasRef }) {
     },
     {
       url: './assets/',
-      fileName: 'camisaVerde.glb',
+      fileName: 'Camisa.glb',
       thumbnailUrl: '/assets/greenShirt.jpeg',
     },
     {
@@ -23,12 +23,13 @@ function Babylon({ graphicsEngine, renderCanvasRef }) {
     },
     {
       url: './assets/',
-      fileName: 'camisaVerde.glb',
+      fileName: 'Camisa.glb',
       thumbnailUrl: '/assets/greenShirt.jpeg',
     },
   ];
 
   const importMesh = (url, fileName) => {
+    console.log(`button clicked, importing ${fileName} from ${url}`);
     graphicsEngine.current.importMesh(url, fileName);
   };
 

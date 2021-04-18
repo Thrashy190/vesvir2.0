@@ -116,6 +116,8 @@ export default class GraphicsEngine {
       fileName,
       scene,
       (newMeshes, particleSystems, skeletons) => {
+        console.log('newMeshes', newMeshes);
+        console.log('skeletons', skeletons);
         this.updateMesh(newMeshes, particleSystems, skeletons);
 
         // If model data is not null or undefined, dispose the mesh and skeleton
@@ -126,7 +128,6 @@ export default class GraphicsEngine {
         this.model = { mesh: newMeshes[0], skeleton: skeletons[0] };
       }
     );
-    return camera;
   }
 
   renderDistanceScale() {
@@ -159,18 +160,21 @@ export default class GraphicsEngine {
 
   renderFullMovementScale() {
     const self = this;
-    const mesh = this.model.mesh;
-    if (this.distance.score > 0.7) {
-      console.table(mesh.position);
-      this.center = centerChestPoint(self.posesData);
-      mesh.position = new BABYLON.Vector3(
-        0.0125 * self.center.x - 4,
-        -0.0167 * self.center.y + 4,
-        -6.035 * Math.log(this.distance.distance) + 30.722
-      );
-    } else {
-      console.log('fuera del cuadro');
-      mesh.position = new BABYLON.Vector3(0, 0, -30);
+    if (this.model && this.model.mesh) {
+      const mesh = this.model.mesh;
+
+      if (this.distance.score > 0.7) {
+        // console.table(mesh.position);
+        this.center = centerChestPoint(self.posesData);
+        mesh.position = new BABYLON.Vector3(
+          0.0125 * self.center.x - 4,
+          -0.0167 * self.center.y + 4,
+          -6.035 * Math.log(this.distance.distance) + 30.722
+        );
+      } else {
+        // console.log('fuera del cuadro');
+        mesh.position = new BABYLON.Vector3(0, 0, -30);
+      }
     }
   }
 
